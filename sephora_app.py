@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 skincare_df = pd.read_csv('/Users/amina/projects/sephora-recommendation/skincare_df.csv', low_memory=False)
-model = joblib.load('/Users/amina/projects/sephora-recommendation/skincare_model.pkl')
+model = joblib.load('/Users/amina/projects/sephora-recommendation/sephora_model_1.pkl')
 
 def get_recommendations(user_skin_type, user_skin_tone, user_budget_category):
     filtered_data = skincare_df[
@@ -21,19 +21,19 @@ def get_recommendations(user_skin_type, user_skin_tone, user_budget_category):
                        'skin_tone_fairLight', 'skin_tone_light', 'skin_tone_lightMedium',
                        'skin_tone_medium', 'skin_tone_mediumTan', 'skin_tone_notSureST',
                        'skin_tone_olive', 'skin_tone_porcelain', 'skin_tone_rich', 'skin_tone_tan']
-
+    
     for col in feature_columns:
         if col not in filtered_data.columns:
             filtered_data[col] = 0
 
+
     filtered_data['predicted_rating'] = model.predict(filtered_data[feature_columns])
 
     recommendations = filtered_data.sort_values(by='predicted_rating', ascending=False).head(3)
-    
-    
+
     return recommendations[['product_name', 'predicted_rating']]
 
-# Streamlit UI components
+
 st.title('Skincare Product Recommendation System')
 
 user_skin_type = st.selectbox('Select your skin type', ['Combination', 'Dry', 'Oily'])
